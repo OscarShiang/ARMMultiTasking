@@ -29,6 +29,16 @@ elseif( BP_LOWER STREQUAL "aarch64" )
   set( QEMU_CMD     "qemu-system-aarch64 -M virt -cpu cortex-a57" )
   # O3 LTO UBSAN trace demo needs some extra
   set( STACK_SIZE 3 )
+elseif( BP_LOWER STREQUAL "raspi4" )
+  set( PREFIX       "aarch64-none-elf-" )
+  # Don't generate NEON
+  set( PLATFORM     "-mcpu=cortex-a72 -mgeneral-regs-only" )
+  set( PLATFORM_SRC "raspi4" )
+  set( RAM_START    "0x20000000" )
+  set( UART_BASE    "0x09000000" )
+  set( QEMU_CMD     "qemu-system-aarch64 -M virt -cpu cortex-a57" )
+  # O3 LTO UBSAN trace demo needs some extra
+  set( STACK_SIZE 3 )
 elseif( BP_LOWER STREQUAL "thumb" )
   set( PREFIX       "arm-none-eabi-" )
   set( PLATFORM     "-mthumb -mcpu=cortex-m4" )
@@ -138,6 +148,11 @@ endif()
 
 if(BP_LOWER STREQUAL "thumb" )
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/timer.c)
+endif()
+
+if(BP_LOWER STREQUAL "raspi4" )
+  set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/uart.c)
+  set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/mbox.c)
 endif()
 
 set_property(SOURCE src/hw/${PLATFORM_SRC}/startup.s PROPERTY LANGUAGE C)

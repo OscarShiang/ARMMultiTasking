@@ -1,5 +1,6 @@
 #include "user/thread.h"
 #include "user/util.h"
+#include "port/uart.h"
 
 __attribute__((noreturn)) void thread_worker_1() {
   while (1) {
@@ -11,6 +12,16 @@ __attribute__((noreturn)) void thread_worker_1() {
       }
       yield();
     }
+  }
+}
+
+void main(void) {
+  uart_init();
+  uart_puts("Hello World");
+
+  char c;
+  while((c = uart_getc())) {
+      uart_send(c);
   }
 }
 

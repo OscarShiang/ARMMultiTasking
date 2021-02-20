@@ -1,9 +1,9 @@
 ENTRY(_Reset)
 SECTIONS
 {
- .vectors . : { *vectors.s.o(.text) }
- .startup . : { *startup.s.o(.text) }
+ . = 0x8000;
  .text : {
+    KEEP(*(.text.boot))
     *(.text*)
     *(.rodata*)
     /* align to pointer size (8 for AArch64) */
@@ -12,7 +12,6 @@ SECTIONS
     *(.init_array*)
     _einit_array = .;
     _etext = . ; }
- . = ram_start;
  .data :
   AT ( ADDR (.text) + SIZEOF (.text) )
   {
@@ -41,8 +40,8 @@ SECTIONS
     *(.code_page)
     _bend = . ;
   }
-  ram_end = .;
-  ASSERT((ram_end <= (ram_start + ram_size)), "Too much data for RAM!")
   /* Don't need unwinding info on Arm */
   /DISCARD/ : { *(.ARM.exidx* ) }
 }
+
+_bsize = (_bend - _bstart) >> 3;

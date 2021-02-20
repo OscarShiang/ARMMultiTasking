@@ -4,6 +4,7 @@
 #include "common/print.h"
 #include "common/trace.h"
 #include "port/port.h"
+#include "port/uart.h"
 // So we can user log_event on exit
 #include "user/thread.h"
 #if CODE_PAGE_SIZE
@@ -147,6 +148,9 @@ __attribute__((noreturn)) void entry(void) {
 
   // Zero bss
   memset(&_bstart, 0, &_bend - &_bstart);
+
+  uart_init();
+  uart_puts("Hello World\n");
 
   // Call constructors
   typedef void (*fn_ptr)(void);
