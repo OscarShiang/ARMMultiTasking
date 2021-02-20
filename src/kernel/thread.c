@@ -143,14 +143,14 @@ __attribute__((constructor)) static void init_threads(void) {
 __attribute__((noreturn)) void entry(void) {
   extern char _etext, _data, _edata, _bstart, _bend;
 
+  uart_init();
+  uart_puts("Hello AMT!\n");
+
   // Copy .data sections
   memcpy(&_data, &_etext, &_edata - &_data);
 
   // Zero bss
   memset(&_bstart, 0, &_bend - &_bstart);
-
-  uart_init();
-  uart_puts("Hello World\n");
 
   // Call constructors
   typedef void (*fn_ptr)(void);

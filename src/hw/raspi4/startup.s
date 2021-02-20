@@ -50,6 +50,6 @@ _Reset:
     cbnz    w2, 3b
 
     // jump to C code, should not return
-4:  bl      main
+4:  bl      entry
     // for failsafe, halt this core too
     b       1b
