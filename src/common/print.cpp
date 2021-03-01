@@ -20,7 +20,9 @@ public:
 
   int putchar_n(int chr, unsigned int repeat) const {
     for (unsigned int i = 0; i < repeat; ++i) {
-      write(chr);
+      if (chr == '\n')
+	  uart_send('\r');
+      uart_send(chr);
     }
     return repeat;
   }
@@ -57,7 +59,9 @@ public:
     volatile uint32_t* const UART0 = (uint32_t*)m_out;
     *UART0 = (uint32_t)chr;
 #endif
-    uart_send(chr);
+    uart_puts((char *)"write: ");
+    uart_send((char)chr);
+    uart_puts((char *)"write: ");
     // We do not modify buf here, serial port doesn't move
   }
 };
@@ -278,6 +282,8 @@ int vprintf(const char* fmt, va_list args) {
       args = handle_format_char(&len, &fmt, args, serial_output);
     } else {
       // Any non formatting character
+      // len++;
+      // uart_send(*fmt++);
       len += serial_output.putchar(*fmt++);
     }
   }
