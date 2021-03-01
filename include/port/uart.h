@@ -23,7 +23,10 @@
  *
  */
 
-#if __cplusplus
+#ifndef PORT_UART_H
+#define PORT_UART_H
+
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -33,6 +36,8 @@ char uart_getc();
 void uart_puts(char *s);
 void uart_hex(unsigned int d);
 
-#if __cplusplus
+#ifdef __cplusplus
 }
 #endif
+
+#endif /* PORT_UART_H */
