@@ -1,7 +1,7 @@
 ENTRY(_Reset)
 SECTIONS
 {
- . = 0x8000;
+ . = 0x80000;
  .text : {
     KEEP(*(.text.boot))
     *(.text*)
@@ -13,7 +13,7 @@ SECTIONS
     _einit_array = .;
     _etext = . ; }
  .data :
-  AT ( ADDR (.text) + SIZEOF (.text) )
+  /* AT ( ADDR (.text) + SIZEOF (.text) ) */
   {
     _data = . ;
     *(.data)
