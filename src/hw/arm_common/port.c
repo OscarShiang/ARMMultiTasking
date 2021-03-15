@@ -37,8 +37,6 @@ size_t generic_syscall(Syscall num, size_t arg1, size_t arg2, size_t arg3,
   register size_t reg2 __asm(RCHR "2") = arg3;
   register size_t reg3 __asm(RCHR "3") = arg4;
 
-  printf("arg0 = %i, arg1 = %i, arg2 = %i, arg3 = %i\n", arg1, arg2, arg3, arg4);
-
   /* r8 is loaded separatley to allow us to inline this
      function safely. It is not a caller saved register
      and can be corrupted by function calls placed between

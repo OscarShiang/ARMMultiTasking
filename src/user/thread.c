@@ -70,7 +70,10 @@ bool thread_name(int tid, char* name) {
       return false;
     }
 
-    memcpy(name, user_thread_info.name, THREAD_NAME_SIZE);
+    // memcpy(name, user_thread_info.name, THREAD_NAME_SIZE);
+    for (int i = 0; i < THREAD_NAME_SIZE; i++) {
+      name[i] = user_thread_info.name[i];
+    }
     return true;
   }
   return get_thread_property(tid, TPROP_NAME, name);

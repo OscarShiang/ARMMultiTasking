@@ -148,14 +148,6 @@ __attribute__((noreturn)) void entry(void) {
   uart_init();
   uart_puts("uart enabled\n");
   
-  //extern char _etext, _data, _edata, _bstart, _bend;
-  
-  //printf("starting to clean bss: start from 0x%x\n", &_bstart);
-  //printf("there are %i bytes to clean\n", (int)(&_bend - &_bstart));
-
-  // Copy .data sections
-  // memcpy(&_data, &_etext, &_edata - &_data);
-
   // Zero bss
   extern char _bstart, _bend;
   char *iter = &_bstart;
@@ -499,6 +491,7 @@ static int k_add_named_thread_with_args(void (*worker)(), const char* name,
 #if CODE_PAGE_SIZE
       setup_code_page(idx);
 #endif
+      printf("[kernel] end thread setting\n");
       return idx;
     }
   }
