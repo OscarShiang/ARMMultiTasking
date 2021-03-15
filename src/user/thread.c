@@ -33,6 +33,7 @@ int add_thread(const char* name, const ThreadArgs* args, void* worker,
   if (args) {
     _args = *args;
   }
+  printf("[User] thread flags: %i\n", flags);
   return DO_SYSCALL_4(add_thread, name, &_args, worker, flags);
 }
 

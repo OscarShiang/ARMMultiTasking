@@ -26,7 +26,8 @@
   /* Save all registers to user stack */
   stp x0,  x1,  [sp, #-16]!
 
-  mrs x0, FPSR              // Restore these second to last
+  // mrs x0, FPSR              // Restore these second to last
+  mov x0, #0
   mrs x1, SPSR_EL1          // so we have temp regs x0/x1 to msr from
   stp x0, x1,   [sp, #-16]!
 
@@ -56,6 +57,11 @@
   mov x3, sp
   str x3, [x1], #8     // current_thread->stack_ptr=sp
 .endm
+
+.global save_thread
+save_thread:
+  SAVE_CURRENT_THREAD
+  ret
 
 .macro DISABLE_TIMER
   mov x0, #2                 // Disable timer and mask interrupt
@@ -179,12 +185,12 @@ actually_load_thread:
 
   /* This is FPSR/SPSR */
   ldp x0, x1, [sp], #16
-  msr FPSR, x0
+  // msr FPSR, x0
   msr SPSR_EL1, x1
 
   /* Actual x0 and x1 */
   ldp x0, x1, [sp], #16
-
+  
   eret
 
 .global signal_handler_wrapper

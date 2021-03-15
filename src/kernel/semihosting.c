@@ -1,4 +1,5 @@
 #include "kernel/semihosting.h"
+#include "common/print.h"
 
 // Arm semihosting routines
 // platform specific asm in generic_semihosting_call
@@ -12,6 +13,11 @@ static size_t get_semihosting_event(int status) {
 }
 
 void k_exit(int status) {
+  printf("Exiting kernel\n");
+  while(1) {
+      // trapping
+  }
+
   size_t event = get_semihosting_event(status);
 #ifdef __aarch64__
   // Parameter pack on 64 bit

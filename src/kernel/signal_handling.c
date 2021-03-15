@@ -1,5 +1,6 @@
 #include "common/attribute.h"
 #include "common/trace.h"
+#include "common/print.h"
 #include "kernel/thread.h"
 #include "port/port.h"
 #include <string.h>
@@ -12,12 +13,23 @@ void init_register_context(Thread* thread) {
 
   thread->stack_ptr -= sizeof(RegisterContext);
   RegisterContext* ctx = (RegisterContext*)thread->stack_ptr;
-  memset(ctx, 0, sizeof(RegisterContext));
+
+  printf("zeroed the context in registers\n");
+  print_register_context(ctx);
+
+  uint8_t *iter = (uint8_t *)ctx;
+  for (size_t i = 0; i < sizeof(RegisterContext); i++)
+      *iter++ = 0;
 
   ctx->pc = (size_t)thread_start;
+  
+  printf("Setting up PC\n");
+  print_register_context(ctx);
+  printf("set arch-based registers\n");
 
   // Set arch specific settings registers
   platform_init_register_context(ctx);
+  print_register_context(ctx);
 }
 
 static void install_signal_handler(Thread* thread, uint32_t signal) {
@@ -58,4 +70,5 @@ void check_signals(Thread* thread) {
       thread->pending_signals = 0;
     }
   }
+  printf("Finish signals checking\n");
 }

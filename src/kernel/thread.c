@@ -95,6 +95,8 @@ void k_set_thread_name(Thread* thread, const char* name) {
 void init_thread(Thread* thread, int tid, const char* name,
                  void (*do_work)(void), const ThreadArgs* args,
                  uint16_t permissions) {
+  printf("Initialize the content of thread\n");
+
   // thread_start will jump to this
   thread->work = do_work;
   thread->signal_handler = NULL;
@@ -128,6 +130,8 @@ void init_thread(Thread* thread, int tid, const char* name,
   // Mask to align to 16 bytes for AArch64
   thread->stack_ptr = (uint8_t*)(ALIGN_STACK_PTR(stack_ptr));
 
+  printf("setting up register\n");
+
   // Setup the initial restore frame
   init_register_context(thread);
 }
@@ -141,16 +145,25 @@ __attribute__((constructor)) static void init_threads(void) {
 }
 
 __attribute__((noreturn)) void entry(void) {
-  extern char _etext, _data, _edata, _bstart, _bend;
-
   uart_init();
-  uart_puts("Hello AMT!\n");
+  uart_puts("uart enabled\n");
+  
+  //extern char _etext, _data, _edata, _bstart, _bend;
+  
+  //printf("starting to clean bss: start from 0x%x\n", &_bstart);
+  //printf("there are %i bytes to clean\n", (int)(&_bend - &_bstart));
 
   // Copy .data sections
-  memcpy(&_data, &_etext, &_edata - &_data);
+  // memcpy(&_data, &_etext, &_edata - &_data);
 
   // Zero bss
-  memset(&_bstart, 0, &_bend - &_bstart);
+  extern char _bstart, _bend;
+  char *iter = &_bstart;
+  while (iter != &_bend) {
+    *iter++ = 0;
+  }
+
+  printf("Hello Entry\n");
 
   // Call constructors
   typedef void (*fn_ptr)(void);
@@ -159,9 +172,11 @@ __attribute__((noreturn)) void entry(void) {
     (*fn)();
   }
 
+#if 0
   if (k_stdout_isatty()) {
     kernel_config |= KCFG_COLOUR_OUTPUT;
   }
+#endif
 
   ThreadArgs empty_args = make_args(0, 0, 0, 0);
 
@@ -180,8 +195,13 @@ __attribute__((noreturn)) void entry(void) {
 #else
   {
 #endif
-    k_add_named_thread_with_args(setup, NULL, &empty_args, 0);
+    int ret = k_add_named_thread_with_args(setup, NULL, &empty_args, 0);
+    printf("creating thread with %i\n", ret);
   }
+
+  printf("start to load the thread\n");
+
+  printf("thread start is at 0x%x\n", thread_start);
 
   load_first_thread();
 
@@ -295,7 +315,11 @@ void k_update_user_thread_info(Thread* thread) {
 
   user_thread_info.id = thread->id;
   user_thread_info.kernel_config = kernel_config;
-  memcpy(user_thread_info.name, thread->name, THREAD_NAME_SIZE);
+  for (int i = 0; i < THREAD_NAME_SIZE; i++) {
+      user_thread_info.name[i] = thread->name[i];
+  }
+  printf("Finish thread name copying\n");
+  // memcpy(user_thread_info.name, thread->name, THREAD_NAME_SIZE);
   user_thread_info.err_no = thread->err_no;
 }
 
@@ -326,8 +350,11 @@ void do_scheduler(void) {
 #if CODE_BACKING_PAGES
   swap_paged_threads(current_thread, next_thread);
 #endif
+  printf("In scheduler\n");
   check_signals(next_thread);
   k_update_user_thread_info(next_thread);
+
+  printf("Exit scheduler\n");
 }
 
 static bool set_thread_state(int tid, ThreadState state) {
@@ -453,6 +480,7 @@ static int k_add_named_thread_with_args(void (*worker)(), const char* name,
                                         const ThreadArgs* args,
                                         uint16_t remove_permissions) {
   for (size_t idx = 0; idx < MAX_THREADS; ++idx) {
+    printf("Checking thread %i: id = %i, state = %i\n", idx, all_threads[idx].id, all_threads[idx].state);
     if (all_threads[idx].id == INVALID_THREAD ||
         all_threads[idx].state == cancelled ||
         all_threads[idx].state == finished) {
@@ -464,6 +492,8 @@ static int k_add_named_thread_with_args(void (*worker)(), const char* name,
         permissions = current_thread->permissions;
       }
       permissions &= ~remove_permissions;
+
+      printf("Setting up thread properties\n");
 
       init_thread(&all_threads[idx], idx, name, worker, args, permissions);
 #if CODE_PAGE_SIZE
@@ -532,6 +562,9 @@ int k_add_thread(const char* name, const ThreadArgs* args, void* worker,
 
   uint16_t kind = flags & TFLAG_KIND_MASK;
   uint16_t remove_permissions = flags >> TFLAG_PERM_SHIFT;
+
+  printf("[kernel] task type: %i\n", kind);
+
   switch (kind) {
     case THREAD_FILE:
 #ifndef CODE_PAGE_SIZE
@@ -559,6 +592,8 @@ void k_thread_wait(void) {
 
 __attribute__((noreturn)) void thread_start(void) {
   // Every thread starts by entering this function
+
+  printf("Entering thread_Start\n");
 
   // Call thread's actual function
   current_thread->work(current_thread->args.a1, current_thread->args.a2,

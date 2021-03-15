@@ -112,6 +112,8 @@ static void k_invalid_syscall(size_t arg1, size_t arg2, size_t arg3,
 
 typedef size_t (*SyscallFn)();
 void k_handle_syscall(void) {
+  printf("Entering kernel\n");
+
   RegisterContext* ctx = (RegisterContext*)current_thread->stack_ptr;
 
   if (!check_stack()) {
@@ -270,6 +272,8 @@ void k_handle_syscall(void) {
     old_err_no = user_thread_info.err_no;
     user_thread_info.err_no = 0;
   }
+
+  printf("[kernel] Each arguments are %i, %i, %i, %i\n[kernel] syscall: %i\n", ctx->arg0, ctx->arg1, ctx->arg2, ctx->arg3, ctx->syscall_num);
 
   result = syscall_fn(ctx->arg0, ctx->arg1, ctx->arg2, ctx->arg3);
   // Make sure we zero out the result if the syscall returned void

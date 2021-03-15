@@ -1,4 +1,3 @@
-ENTRY(_Reset)
 SECTIONS
 {
  . = 0x80000;
@@ -13,7 +12,7 @@ SECTIONS
     _einit_array = .;
     _etext = . ; }
  .data :
-  /* AT ( ADDR (.text) + SIZEOF (.text) ) */
+  AT ( ADDR (.text) + SIZEOF (.text) )
   {
     _data = . ;
     *(.data)
