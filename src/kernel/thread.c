@@ -95,7 +95,7 @@ void k_set_thread_name(Thread* thread, const char* name) {
 void init_thread(Thread* thread, int tid, const char* name,
                  void (*do_work)(void), const ThreadArgs* args,
                  uint16_t permissions) {
-  printf("Initialize the content of thread\n");
+  // printf("Initialize the content of thread\n");
 
   // thread_start will jump to this
   thread->work = do_work;
@@ -307,11 +307,11 @@ void k_update_user_thread_info(Thread* thread) {
 
   user_thread_info.id = thread->id;
   user_thread_info.kernel_config = kernel_config;
+  // memcpy(user_thread_info.name, thread->name, THREAD_NAME_SIZE);
   for (int i = 0; i < THREAD_NAME_SIZE; i++) {
       user_thread_info.name[i] = thread->name[i];
   }
-  printf("Finish thread name copying\n");
-  // memcpy(user_thread_info.name, thread->name, THREAD_NAME_SIZE);
+  // printf("Finish thread name copying\n");
   user_thread_info.err_no = thread->err_no;
 }
 
@@ -342,11 +342,11 @@ void do_scheduler(void) {
 #if CODE_BACKING_PAGES
   swap_paged_threads(current_thread, next_thread);
 #endif
-  printf("In scheduler\n");
+  // printf("In scheduler\n");
   check_signals(next_thread);
   k_update_user_thread_info(next_thread);
 
-  printf("Exit scheduler\n");
+  // printf("Exit scheduler\n");
 }
 
 static bool set_thread_state(int tid, ThreadState state) {
@@ -586,7 +586,7 @@ void k_thread_wait(void) {
 __attribute__((noreturn)) void thread_start(void) {
   // Every thread starts by entering this function
 
-  printf("Entering thread_Start\n");
+  // printf("Entering thread_Start\n");
 
   // Call thread's actual function
   current_thread->work(current_thread->args.a1, current_thread->args.a2,

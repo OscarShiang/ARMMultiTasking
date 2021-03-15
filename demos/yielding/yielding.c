@@ -10,7 +10,7 @@
 __attribute__((noreturn)) void thread_worker_1() {
   while (1) {
     for (int i = 0;; ++i) {
-      printf("[User] current: %i\n", i);
+      // printf("[User] current: %i\n", i);
       if (i == 2) {
         log_event("working");
         log_event("exiting");
@@ -51,13 +51,9 @@ void main() {
 
 void setup(void) {
   printf("Doing syscall\n");
-  set_thread_name(CURRENT_THREAD, "setup");
 
-  ThreadArgs arg = make_args(0, 0, 0, 0);
-  add_named_thread_with_args(thread_worker_1, "new", &arg);
-
-  printf("Entering Hello\n");
   set_kernel_config(KCFG_LOG_SCHEDULER, 0);
+  add_thread_from_worker(thread_worker_1);
 
   printf("[User] Back to setup\n");
 

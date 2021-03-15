@@ -14,7 +14,7 @@ void init_register_context(Thread* thread) {
   thread->stack_ptr -= sizeof(RegisterContext);
   RegisterContext* ctx = (RegisterContext*)thread->stack_ptr;
 
-  printf("zeroed the context in registers\n");
+  // printf("zeroed the context in registers\n");
   print_register_context(ctx);
 
   uint8_t *iter = (uint8_t *)ctx;
@@ -23,9 +23,9 @@ void init_register_context(Thread* thread) {
 
   ctx->pc = (size_t)thread_start;
   
-  printf("Setting up PC\n");
+  // printf("Setting up PC\n");
   print_register_context(ctx);
-  printf("set arch-based registers\n");
+  // printf("set arch-based registers\n");
 
   // Set arch specific settings registers
   platform_init_register_context(ctx);
@@ -70,5 +70,5 @@ void check_signals(Thread* thread) {
       thread->pending_signals = 0;
     }
   }
-  printf("Finish signals checking\n");
+  // printf("Finish signals checking\n");
 }
