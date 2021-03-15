@@ -8,21 +8,27 @@
 
 extern "C" void __cxa_pure_virtual() {
   // TODO: exit error
+  uart_init();
+  uart_puts((char *)"Calling pure virtual function\n");
   while (1) {
   }
 }
 
 class PrintOutput {
 public:
-  explicit PrintOutput(char* out) : m_out(out) {}
+  explicit PrintOutput(char* out, bool buf = true) : is_buf(buf), m_out(out) {}
 
   virtual void write(int chr) const = 0;
 
   int putchar_n(int chr, unsigned int repeat) const {
     for (unsigned int i = 0; i < repeat; ++i) {
-      if (chr == '\n')
+      if (!is_buf) {
+        if (chr == '\n')
 	  uart_send('\r');
-      uart_send(chr);
+        uart_send(chr);
+      } else {
+	write(chr);
+      }
     }
     return repeat;
   }
@@ -44,13 +50,16 @@ public:
     return len;
   }
 
+private:
+  bool is_buf;
+
 protected:
   mutable char* m_out;
 };
 
 class SerialPrintOutput : public PrintOutput {
 public:
-  SerialPrintOutput() : PrintOutput(reinterpret_cast<char*>(UART_BASE)) {
+  SerialPrintOutput() : PrintOutput(reinterpret_cast<char*>(UART_BASE), false) {
     uart_init();
   }
 
