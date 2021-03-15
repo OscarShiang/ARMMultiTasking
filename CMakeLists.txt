@@ -152,7 +152,6 @@ endif()
 
 if(BP_LOWER STREQUAL "raspi4" )
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/uart.c)
-  set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/exc.c)
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/mbox.c)
 endif()
 
