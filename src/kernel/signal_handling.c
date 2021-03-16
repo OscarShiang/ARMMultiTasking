@@ -15,7 +15,7 @@ void init_register_context(Thread* thread) {
   RegisterContext* ctx = (RegisterContext*)thread->stack_ptr;
 
   // printf("zeroed the context in registers\n");
-  print_register_context(ctx);
+  // print_register_context(ctx);
 
   uint8_t *iter = (uint8_t *)ctx;
   for (size_t i = 0; i < sizeof(RegisterContext); i++)
@@ -24,12 +24,12 @@ void init_register_context(Thread* thread) {
   ctx->pc = (size_t)thread_start;
   
   // printf("Setting up PC\n");
-  print_register_context(ctx);
+  // print_register_context(ctx);
   // printf("set arch-based registers\n");
 
   // Set arch specific settings registers
   platform_init_register_context(ctx);
-  print_register_context(ctx);
+  // print_register_context(ctx);
 }
 
 static void install_signal_handler(Thread* thread, uint32_t signal) {

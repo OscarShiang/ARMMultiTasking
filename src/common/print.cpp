@@ -16,19 +16,13 @@ extern "C" void __cxa_pure_virtual() {
 
 class PrintOutput {
 public:
-  explicit PrintOutput(char* out, bool buf = true) : is_buf(buf), m_out(out) {}
+  explicit PrintOutput(char* out) : m_out(out) {}
 
   virtual void write(int chr) const = 0;
 
   int putchar_n(int chr, unsigned int repeat) const {
     for (unsigned int i = 0; i < repeat; ++i) {
-      if (!is_buf) {
-        if (chr == '\n')
-	  uart_send('\r');
-        uart_send(chr);
-      } else {
-	write(chr);
-      }
+      write(chr);
     }
     return repeat;
   }
@@ -50,16 +44,13 @@ public:
     return len;
   }
 
-private:
-  bool is_buf;
-
 protected:
   mutable char* m_out;
 };
 
 class SerialPrintOutput : public PrintOutput {
 public:
-  SerialPrintOutput() : PrintOutput(reinterpret_cast<char*>(UART_BASE), false) {
+  SerialPrintOutput() : PrintOutput(reinterpret_cast<char*>(UART_BASE)) {
     uart_init();
   }
 
@@ -68,9 +59,9 @@ public:
     volatile uint32_t* const UART0 = (uint32_t*)m_out;
     *UART0 = (uint32_t)chr;
 #endif
-    uart_puts((char *)"write: ");
+    if (chr == '\n')
+	uart_send('\r');
     uart_send((char)chr);
-    uart_puts((char *)"write: ");
     // We do not modify buf here, serial port doesn't move
   }
 };

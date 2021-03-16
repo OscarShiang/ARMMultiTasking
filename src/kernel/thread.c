@@ -130,7 +130,7 @@ void init_thread(Thread* thread, int tid, const char* name,
   // Mask to align to 16 bytes for AArch64
   thread->stack_ptr = (uint8_t*)(ALIGN_STACK_PTR(stack_ptr));
 
-  printf("setting up register\n");
+  // printf("setting up register\n");
 
   // Setup the initial restore frame
   init_register_context(thread);
@@ -145,9 +145,6 @@ __attribute__((constructor)) static void init_threads(void) {
 }
 
 __attribute__((noreturn)) void entry(void) {
-  uart_init();
-  uart_puts("uart enabled\n");
-  
   // Zero bss
   extern char _bstart, _bend;
   char *iter = &_bstart;
@@ -155,7 +152,6 @@ __attribute__((noreturn)) void entry(void) {
     *iter++ = 0;
   }
 
-  printf("Hello Entry\n");
 
   // Call constructors
   typedef void (*fn_ptr)(void);
@@ -164,6 +160,7 @@ __attribute__((noreturn)) void entry(void) {
     (*fn)();
   }
 
+  printf("Hello Entry\n");
 #if 0
   if (k_stdout_isatty()) {
     kernel_config |= KCFG_COLOUR_OUTPUT;
