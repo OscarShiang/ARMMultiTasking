@@ -21,18 +21,6 @@ __attribute__((noreturn)) void thread_worker_1() {
   }
 }
 
-void print_something() {
-    printf("[Debug] run here hihi\n");
-}
-
-void print_elr_el1(size_t x) {
-    printf("[Debug] address: 0x%x\n");
-}
-
-void print_current_context() {
-    print_register_context((RegisterContext *)current_thread->stack_ptr);
-}
-
 void main() {
     uart_init();
     uart_puts("test\n");
