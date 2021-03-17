@@ -153,6 +153,7 @@ endif()
 if(BP_LOWER STREQUAL "raspi4" )
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/uart.c)
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/mbox.c)
+  set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/irq.c)
 endif()
 
 set_property(SOURCE src/hw/${PLATFORM_SRC}/startup.S PROPERTY LANGUAGE C)

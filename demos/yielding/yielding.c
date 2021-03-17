@@ -33,14 +33,6 @@ void print_current_context() {
     print_register_context((RegisterContext *)current_thread->stack_ptr);
 }
 
-void invalid_entry()
-{
-    printf("[Error] Invalid exception occurs\n");
-    while(1) {
-	// do nothing
-    }
-}
-
 void main() {
     uart_init();
     uart_puts("test\n");
