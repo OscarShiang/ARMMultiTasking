@@ -121,7 +121,7 @@ set( KERNEL_SOURCES
   src/hw/arm_common/port.c
 
   src/hw/${PLATFORM_SRC}/vectors.s
-  src/hw/${PLATFORM_SRC}/startup.S
+  src/hw/${PLATFORM_SRC}/startup.s
   src/hw/${PLATFORM_SRC}/yield.S
   src/hw/${PLATFORM_SRC}/port.c
 
@@ -156,7 +156,7 @@ if(BP_LOWER STREQUAL "raspi4" )
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/irq.c)
 endif()
 
-set_property(SOURCE src/hw/${PLATFORM_SRC}/startup.S PROPERTY LANGUAGE C)
+set_property(SOURCE src/hw/${PLATFORM_SRC}/startup.s PROPERTY LANGUAGE C)
 set_property(SOURCE src/hw/${PLATFORM_SRC}/yield.S   PROPERTY LANGUAGE C)
 set_property(SOURCE src/hw/${PLATFORM_SRC}/vectors.s PROPERTY LANGUAGE C)
 
