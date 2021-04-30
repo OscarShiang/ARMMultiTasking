@@ -63,6 +63,10 @@ _Reset:
 5:  ldr     x1, =stack_top
     mov     sp, x1
 
+    mov     x1, #(0x3 << 20)
+    msr     cpacr_el1, x1
+    isb
+
     // jump to C code, should not return
     bl      entry
     // for failsafe, halt this core too
