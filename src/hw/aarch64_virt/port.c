@@ -22,3 +22,13 @@ void print_register_context(const RegisterContext* ctx) {
          ctx->x22, ctx->x23, ctx->x24, ctx->x25, ctx->x26, ctx->x27, ctx->x28,
          ctx->x29, ctx->x30, ctx->pc, ctx->spsr_el1, ctx->fpsr);
 }
+
+static volatile uint32_t* const UART0 = (uint32_t*)UART_BASE;
+
+void platform_putc_init() {
+  // In QEMU, We don't have to initialize UART
+}
+
+void platform_putchar(int c) {
+  *UART0 = (uint32_t)c;
+}

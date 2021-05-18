@@ -1,5 +1,6 @@
 #include "common/print.h"
 #include "common/thread.h"
+#include "port/port.h"
 #include <ctype.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -47,12 +48,12 @@ protected:
 
 class SerialPrintOutput : public PrintOutput {
 public:
-  SerialPrintOutput() : PrintOutput(reinterpret_cast<char*>(UART_BASE)) {}
+  SerialPrintOutput() : PrintOutput(reinterpret_cast<char*>(UART_BASE)) {
+    platform_putc_init();
+  }
 
   void write(int chr) const final {
-    volatile uint32_t* const UART0 = (uint32_t*)m_out;
-    *UART0 = (uint32_t)chr;
-    // We do not modify buf here, serial port doesn't move
+    platform_putchar(chr);
   }
 };
 

@@ -50,4 +50,15 @@ size_t generic_syscall(Syscall num, size_t arg1, size_t arg2, size_t arg3,
 // Used to catch returning fibers
 void set_context_from_stack_address(void);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void platform_putc_init();
+void platform_putchar(int c);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* ifdef PORT_PORT_H */
