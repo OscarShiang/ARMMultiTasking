@@ -39,6 +39,19 @@ elseif( BP_LOWER STREQUAL "thumb" )
   set( RAM_SIZE     0x10000)
   set( UART_BASE    "0x4000C000" )
   set( QEMU_CMD     "qemu-system-arm -M lm3s6965evb -cpu cortex-m4" )
+elseif( BP_LOWER STREQUAL "raspi4" )
+  set( PREFIX       "aarch64-none-elf-" )
+  # Don't generate NEON
+  set( PLATFORM     "-mcpu=cortex-a72 -mgeneral-regs-only" )
+  set( PLATFORM_SRC "raspi4" )
+  set( QEMU_CMD     "qemu-system-aarch64 -M virt -cpu cortex-a57" )
+  # O3 LTO UBSAN trace demo needs some extra
+  set( STACK_SIZE 3 )
+  # Define here to not generate error when expanding macros
+  set( RAM_START    "0x0" )
+  set( UART_BASE    "0x0" )
+  set( SEMIHOSTING OFF )
+  set( LINKER_SCRIPT kernel_rpi.ld )
 else()
   message(FATAL_ERROR "Invalid platform \"${BP_LOWER}\". \
   Expected one of \"arm\", \"thumb\", \"aarch64\".")
@@ -146,6 +159,14 @@ endif()
 
 if(BP_LOWER STREQUAL "thumb" )
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/timer.c)
+endif()
+
+if(BP_LOWER STREQUAL "raspi4" )
+  set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/uart.c)
+  set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/mbox.c)
+  set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/irq.c)
+  # Avoid from using NEON related implementations
+  set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/libs/string.c)
 endif()
 
 set_property(SOURCE src/hw/${PLATFORM_SRC}/startup.s PROPERTY LANGUAGE C)
