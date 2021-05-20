@@ -22,6 +22,7 @@ char* strncpy(char* dst, const char* src, size_t num) {
   return dst;
 }
 
+#if 0
 int strcmp(const char* s1, const char* s2) {
   while (*s1 == *s2 && *s1 != '\0' && *s2 != '\0') {
     s1++;
@@ -83,6 +84,7 @@ int memcmp(const void* p1, const void* p2, size_t len) {
 
   return (len > 0) ? *s1 - *s2 : 0;
 }
+#endif
 
 void bzero(void* dst, size_t len) {
   memset(dst, 0, len);
