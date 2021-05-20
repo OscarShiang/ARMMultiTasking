@@ -233,6 +233,13 @@ static va_list handle_format_char(int* out_len, const char** fmt_chr,
       fmt++;
       break;
     }
+    case 'c': // character
+    {
+      const int c = va_arg(args, int);
+      len += output.putchar_n(c, 1);
+      fmt++;
+      break;
+    }
     case 'u': // Unsigned decimal
     case 'x': // unsigned hex
     case 'X': {
