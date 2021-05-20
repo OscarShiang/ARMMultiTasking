@@ -128,6 +128,7 @@ set( KERNEL_SOURCES
   src/kernel/message.c
   src/kernel/semihosting.c
   src/kernel/file.c
+  src/kernel/tarfs.c
 
   src/hw/arm_common/port.c
 
