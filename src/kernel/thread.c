@@ -11,6 +11,7 @@
 #endif
 #include "kernel/alloc.h"
 #include "kernel/file.h"
+#include "kernel/tarfs.h"
 #include <stdarg.h>
 #include <string.h>
 
@@ -154,6 +155,8 @@ __attribute__((noreturn)) void entry(void) {
   for (fn_ptr* fn = &_init_array; fn < &_einit_array; ++fn) {
     (*fn)();
   }
+
+  tarfs_init((void*)0x300000);
 
   if (k_stdout_isatty()) {
     kernel_config |= KCFG_COLOUR_OUTPUT;

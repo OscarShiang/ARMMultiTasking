@@ -2,6 +2,7 @@
 #include "common/assert.h"
 #include "common/print.h"
 #include "kernel/semihosting.h"
+#include "kernel/tarfs.h"
 #include "kernel/thread.h"
 #include <stddef.h>
 #include <string.h>
@@ -100,8 +101,12 @@ int k_open(const char* path, int oflag, ...) {
     return -1;
   }
 
+#ifdef SEMIHOSTING_ENABLED
   size_t parameters[] = {(size_t)path, oflag, strlen(path)};
   return generic_semihosting_call(SYS_OPEN, parameters);
+#else
+  return tarfs_open(path, oflag);
+#endif
 }
 
 ssize_t k_read(int fildes, void* buf, size_t nbyte) {
@@ -109,9 +114,13 @@ ssize_t k_read(int fildes, void* buf, size_t nbyte) {
     return 0;
   }
 
+#ifdef SEMIHOSTING_ENABLED
   size_t parameters[] = {fildes, (size_t)buf, nbyte};
   size_t ret = generic_semihosting_call(SYS_READ, parameters);
   return nbyte - ret;
+#else
+  return tarfs_read(fildes, buf, nbyte);
+#endif
 }
 
 ssize_t k_write(int filedes, const void* buf, size_t nbyte) {
@@ -119,9 +128,13 @@ ssize_t k_write(int filedes, const void* buf, size_t nbyte) {
     return 0;
   }
 
+#ifdef SEMIHOSTING_ENABLED
   size_t parameters[] = {filedes, (size_t)buf, nbyte};
   size_t ret = generic_semihosting_call(SYS_WRITE, parameters);
   return nbyte - ret;
+#else
+  return tarfs_write(filedes, buf, nbyte);
+#endif
 }
 
 off_t k_lseek(int fd, off_t offset, int whence) {
@@ -130,9 +143,13 @@ off_t k_lseek(int fd, off_t offset, int whence) {
     return (off_t)-1;
   }
 
+#ifdef SEMIHOSTING_ENABLED
   size_t parameters[] = {fd, offset};
   int got = generic_semihosting_call(SYS_SEEK, parameters);
   return got == 0 ? offset : (off_t)-1;
+#else
+  return tarfs_seek(fd, offset, whence);
+#endif
 }
 
 int k_remove(const char* path) {
@@ -140,8 +157,12 @@ int k_remove(const char* path) {
     return -1;
   }
 
+#ifdef SEMIHOSTING_ENABLED
   size_t parameters[] = {(size_t)path, strlen(path)};
   return generic_semihosting_call(SYS_REMOVE, parameters);
+#else
+  return tarfs_remove(path);
+#endif
 }
 
 int k_close(int filedes) {
@@ -149,9 +170,13 @@ int k_close(int filedes) {
     return -1;
   }
 
+#ifdef SEMIHOSTING_ENABLED
   /* Need to make sure this is in initialised.
      If we use &filedes it thinks we only need
      the address of it. */
   size_t temp = filedes;
   return generic_semihosting_call(SYS_CLOSE, &temp);
+#else
+  return tarfs_close(filedes);
+#endif
 }
