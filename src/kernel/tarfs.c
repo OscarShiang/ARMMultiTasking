@@ -170,7 +170,9 @@ int tarfs_remove(const char* path) {
   return -1;
 }
 
-static bool is_in_dir(const char* dir, const char* path) {
+static bool is_in_dir(const char* dir, const tarfs_inode_t* inode) {
+  char *path = inode->name;
+
   int dir_len = strlen(dir);
   int path_len = strlen(path);
   if (dir_len == path_len)
@@ -182,25 +184,42 @@ static bool is_in_dir(const char* dir, const char* path) {
   int slash_cnt = 0;
   for (int i = dir_len; i < path_len; i++) {
     if (path[i] == '/') {
-      if (++slash_cnt > 1)
-        return false;
+      slash_cnt++;
+      switch (inode->attribute) {
+      case '0':
+	  if (slash_cnt > 0)
+	      return false;
+	  break;
+      case '5':
+	  if (slash_cnt > 1)
+	      return false;
+	  break;
+      default:
+	  return false;
+      }
     }
   }
   return true;
 }
 
-void tarfs_listdir(char* path) {
+int tarfs_listdir(char* path, char *out, size_t outsize) {
   if (!strcmp(path, "."))
     path = "";
 
+  size_t bufcnt = 0;
   int path_len = strlen(path);
   for (int i = 0; i < MAX_INODE; i++) {
     if (inodes[i].data == NULL)
       continue;
 
-    if (is_in_dir(path, inodes[i].name)) {
-      printf("%s ", inodes[i].name + path_len);
+    if (is_in_dir(path, &inodes[i])) {
+      bufcnt += sprintf(out + bufcnt, "%s ", inodes[i].name + path_len);
+      if (bufcnt > outsize) {
+	out[0] = '\0';
+	return -1;
+      }
     }
   }
-  printf("\n");
+
+  return bufcnt;
 }

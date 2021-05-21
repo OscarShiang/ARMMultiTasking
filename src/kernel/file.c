@@ -67,6 +67,7 @@ int k_list_dir(const char* path, char* out, size_t outsz) {
     return -1;
   }
 
+#ifndef SEMIHOSTING_ENABLED
   // Semihosting doesn't provide an 'ls' command
   // so make our own with a temp file
   char cmd[128];
@@ -94,6 +95,9 @@ int k_list_dir(const char* path, char* out, size_t outsz) {
   k_close(ls_fd);
 
   return 0;
+#else
+  return tarfs_listdir(path, out, outsz);
+#endif
 }
 
 int k_open(const char* path, int oflag, ...) {
