@@ -175,11 +175,11 @@ static bool is_in_dir(const char* dir, const tarfs_inode_t* inode) {
 
   int dir_len = strlen(dir);
   int path_len = strlen(path);
-  if (dir_len == path_len)
-    return false;
-
   if (strncmp(dir, path, dir_len))
     return false;
+
+  if (dir_len == path_len)
+    return true;
 
   int slash_cnt = 0;
   for (int i = dir_len; i < path_len; i++) {
@@ -202,8 +202,10 @@ static bool is_in_dir(const char* dir, const tarfs_inode_t* inode) {
   return true;
 }
 
-int tarfs_listdir(char* path, char* out, size_t outsize) {
-  if (!strcmp(path, "."))
+int tarfs_listdir(const char* lpath, char* out, size_t outsize) {
+  char *path = (char *)lpath;
+
+  if (!strcmp(lpath, "."))
     path = "";
 
   size_t bufcnt = 0;

@@ -10,7 +10,7 @@ void worker(int argc, char* argv[]) {
   }
 
   char res[MAX_RES];
-  const char* path = NULL;
+  char* path = NULL;
   if (argc == 2) {
     path = argv[1];
   } else {
@@ -23,5 +23,5 @@ void worker(int argc, char* argv[]) {
     return;
   }
 
-  printf("%s", res);
+  printf("%s\n", res);
 }

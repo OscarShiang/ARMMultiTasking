@@ -41,6 +41,6 @@ ssize_t tarfs_write(int fd, const void* buf, size_t count);
 off_t tarfs_seek(int fd, off_t offset, int whence);
 int tarfs_close(int fd);
 int tarfs_remove(const char* path);
-int tarfs_listdir(char* path, char* out, size_t outsize);
+int tarfs_listdir(const char* path, char* out, size_t outsize);
 
 #endif /* TARFS_H */

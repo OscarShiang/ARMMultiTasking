@@ -3,6 +3,7 @@
 #include "user/file.h"
 #include "user/thread.h"
 #include "user/util.h"
+#include "port/raspi4/uart.h"
 #include <string.h>
 
 #define MAX_CMD_LINE_PARTS 20
@@ -227,16 +228,22 @@ static void handle_char(CmdLineState* state) {
 }
 
 static void command_loop(int input) {
+  (void) input;
   CmdLineState state = {.pos = 0};
 
   PRINT_PROMPT
   while (1) {
+    state.in[0] = uart_getc();
+    ssize_t got = 1;
+
+    // printf("got: %x: %c\n", state.in[0], state.in[0]);
+
     // -1 for null terminator space
-    ssize_t got = read(input, &state.in, INPUT_BUFFER_SIZE - 1);
+    // ssize_t got = read(input, &state.in, INPUT_BUFFER_SIZE - 1);
 
     // in qemu 2, got = 1 + size of read seems to mean nothing read
     // qemu version >=4 returns 0 when nothing is read
-    if (!got || got == INPUT_BUFFER_SIZE) {
+    if (got == INPUT_BUFFER_SIZE) {
       continue;
     }
 
@@ -244,7 +251,7 @@ static void command_loop(int input) {
     state.in[got] = '\0';
     for (state.curr = state.in; *state.curr != '\0'; ++state.curr) {
       switch (*state.in) {
-        case '\r': // Enter
+        case '\n': // Enter
           handle_return(&state);
           break;
         case 0x03: // Ctrl-C
@@ -272,10 +279,10 @@ void run_shell() {
   printf("----- AMT Shell -----\n");
   printf("---------------------\n");
 
-  int input = open(":tt", O_RDONLY);
-  assert((input >= 0) && "Could not open stdin!");
+  // int input = open(":tt", O_RDONLY);
+  // assert((input >= 0) && "Could not open stdin!");
   // TODO: use stdout also?
-  command_loop(input);
+  command_loop(0);
 }
 
 void setup(void) {
