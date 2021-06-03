@@ -1,9 +1,10 @@
 #include "common/assert.h"
 #include "common/print.h"
+#include "port/raspi4/power.h"
+#include "port/raspi4/uart.h"
 #include "user/file.h"
 #include "user/thread.h"
 #include "user/util.h"
-#include "port/raspi4/uart.h"
 #include <string.h>
 
 #define MAX_CMD_LINE_PARTS 20
@@ -56,6 +57,8 @@ static ProcessedCmdLine split_cmd_line(char* cmd_line) {
 static void help(int argc, char* argv[]);
 static void quit(int argc, char* argv[]);
 static void run(int argc, char* argv[]);
+static void reboot(int argc, char* argv[]);
+static void shutdown(int argc, char* argv[]);
 
 typedef struct {
   const char* name;
@@ -63,9 +66,9 @@ typedef struct {
   const char* help_text;
 } BuiltinCommand;
 BuiltinCommand builtins[] = {
-    {"help", help, "help <builtin name>"},
-    {"quit", quit, "Quit the shell"},
-    {"run", run, "run <program name>"},
+    {"help", help, "help <builtin name>"}, {"quit", quit, "Quit the shell"},
+    {"run", run, "run <program name>"},    {"reboot", reboot, "reboot"},
+    {"shutdown", shutdown, "shutdown"},
 };
 const size_t num_builtins = sizeof(builtins) / sizeof(BuiltinCommand);
 
@@ -126,6 +129,16 @@ static void quit(int argc, char* argv[]) {
   (void)argc;
   (void)argv;
   exit(0);
+}
+
+static void reboot(int argc, char* argv[]) {
+  (void)argc, (void)argv;
+  reset();
+}
+
+static void shutdown(int argc, char* argv[]) {
+  (void)argc, (void)argv;
+  power_off();
 }
 
 static void do_command(char* cmd) {
@@ -203,9 +216,6 @@ static void handle_escape_sequence(CmdLineState* state) {
       case 'D': // Left / back
         state->curr += 2;
         break;
-      default:
-        assert(0); // Shouldn't get here
-        __builtin_unreachable();
     }
   } else {
     assert(0 && "Unhandled escape sequence!\n");
@@ -228,7 +238,7 @@ static void handle_char(CmdLineState* state) {
 }
 
 static void command_loop(int input) {
-  (void) input;
+  (void)input;
   CmdLineState state = {.pos = 0};
 
   PRINT_PROMPT

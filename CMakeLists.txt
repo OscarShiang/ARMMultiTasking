@@ -166,6 +166,7 @@ if(BP_LOWER STREQUAL "raspi4" )
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/uart.c)
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/mbox.c)
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/irq.c)
+  set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/power.c)
   # Avoid from using NEON related implementations
   set( KERNEL_SOURCES ${KERNEL_SOURCES} src/hw/${PLATFORM_SRC}/libs/string.c)
 endif()
