@@ -58,19 +58,12 @@ int tarfs_init(void* opaque) {
         .attribute = (char)header->typeflag,
         .data = (uint8_t*)(header + 1),
     };
-
-    printf("=== The %ith file ===\n", inode_curr);
-    printf("name:\t%s\n"
-           "size\t%i\n"
-           "type\t'%c'\n",
-           header->name, size, header->typeflag);
-
     inodes[inode_curr++] = node;
 
-    if (size > 0) {
-      header += (size / 512) + 1;
-    }
     header++;
+    if (size > 0) {
+      header += (size / 512) + (size % 512 ? 1 : 0);
+    }
   }
   return 0;
 }
@@ -78,9 +71,16 @@ int tarfs_init(void* opaque) {
 int tarfs_open(const char* path, int flags) {
   (void)flags;
 
+  size_t path_len = strlen(path);
   tarfs_inode_t* node = NULL;
-  for (int i = 0; i < MAX_FDS; i++) {
-    if (!strcmp(path, inodes[i].name)) {
+  for (int i = 0; i < MAX_INODE; i++) {
+    if (inodes[i].attribute != '0')
+      continue;
+    if (inodes[i].data == NULL)
+      continue;
+
+    if (!strncmp(path, inodes[i].name, path_len) &&
+        path_len == strlen(inodes[i].name)) {
       node = &inodes[i];
       break;
     }
@@ -203,7 +203,7 @@ static bool is_in_dir(const char* dir, const tarfs_inode_t* inode) {
 }
 
 int tarfs_listdir(const char* lpath, char* out, size_t outsize) {
-  char *path = (char *)lpath;
+  char* path = (char*)lpath;
 
   if (!strcmp(lpath, "."))
     path = "";
