@@ -74,7 +74,7 @@ const size_t num_builtins = sizeof(builtins) / sizeof(BuiltinCommand);
 
 // Semihosting has no way to 'ls' a dir
 // so maintain a manual list
-const char* programs[] = {"echo", "ps", "ls"};
+const char* programs[] = {"echo", "ps", "ls", "fib", "cat"};
 const size_t num_programs = sizeof(programs) / sizeof(const char*);
 
 char run_progname[256];
